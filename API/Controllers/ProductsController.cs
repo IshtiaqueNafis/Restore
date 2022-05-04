@@ -1,0 +1,38 @@
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using API.data;
+using API.models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+
+namespace API.Controllers
+{
+    [ApiController]
+    [Route("api/[controller]")] // menas api/Products
+    public class ProductsController : ControllerBase
+    {
+        private readonly StoreContext _context;
+
+        public ProductsController(StoreContext context)
+        {
+            _context = context;
+        }
+
+        #region GetProducts() --> method: get returns all products 
+
+        [HttpGet]
+        public async Task<ActionResult<List<Product>>> GetProducts() =>  await _context.Products.ToListAsync();
+
+        #endregion
+
+        #region GetProducts(int id) ==> method: get, get a single product from database
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Product>> GetProduct(int id) =>    await _context.Products.FindAsync(id);
+
+        #endregion
+
+
+    }
+}
