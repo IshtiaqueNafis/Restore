@@ -1,4 +1,5 @@
 using API.data;
+using API.Middleware;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -26,16 +27,16 @@ namespace API
             services.AddDbContext<StoreContext>(opt =>
                 opt.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
             services.AddCors(); //add cors 
-            
-            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseMiddleware<ExceptionMiddleWare>();
+
             if (env.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
+           
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "API v1"));
             }
@@ -43,12 +44,8 @@ namespace API
             app.UseHttpsRedirection();
 
             app.UseRouting();
-            app.UseCors(opt =>
-            {
-                opt.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:3000");
-                
-            });
-            
+            app.UseCors(opt => { opt.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:3000"); });
+
 
             app.UseAuthorization();
 
