@@ -1,13 +1,18 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {Product} from "../../app/models/product";
 import ProductList from "./ProductList";
 
-interface Props {
-    products: Product[];
 
-}
 
-const Catalog = ({products}: Props) => {
+const Catalog = () => {
+
+    const [products, setProducts] = useState<Product[]>([]) // means it will be typescript product
+
+    useEffect(() => {
+        fetch("http://localhost:5000/api/products").then(response => response.json()).then(data => setProducts(data))
+    }, [])
+
+
     return (
         <>
             <ProductList products={products}/>
