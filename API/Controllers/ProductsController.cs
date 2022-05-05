@@ -8,9 +8,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers
 {
-    [ApiController]
-    [Route("api/[controller]")] // menas api/Products
-    public class ProductsController : ControllerBase
+  // menas api/Products
+    public class ProductsController : BaseApiController
     {
         private readonly StoreContext _context;
 
