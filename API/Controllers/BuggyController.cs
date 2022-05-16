@@ -8,10 +8,7 @@ namespace API.Controllers
         #region Name:GetNotFound() HTTpRequest:method-get function returns HttpRequest when nothing is found
 
         [HttpGet("not-found")]
-        public ActionResult GetNotFound()
-        {
-            return NotFound();
-        }
+        public ActionResult GetNotFound() => NotFound();
 
         #endregion
 
@@ -19,10 +16,7 @@ namespace API.Controllers
         #region Name:GetBadRequest() HTTpRequest:method-get function returns 400 bad request 
 
         [HttpGet("bad-request")]
-        public ActionResult GetBadRequest()
-        {
-            return BadRequest("this is a bad request");
-        }
+        public ActionResult GetBadRequest() => BadRequest("this is a bad request");
 
         #endregion
 
@@ -38,7 +32,7 @@ namespace API.Controllers
 
         #region Name:GetValidationError() HTTpRequest:method-get function sends error when error happened 
 
-        [HttpGet("Validation-error")] // ValidationProblem();
+        [HttpGet("Validation-error")] 
         public ActionResult GetValidationError() 
         {
             ModelState.AddModelError("Problem 1", "this is the first error");
@@ -50,11 +44,8 @@ namespace API.Controllers
 
         #region Name:GetServerError() HTTpRequest:method-get function sends  a server error
 
-        [HttpGet("server=error")]
-        public ActionResult GetServerError()
-        {
-            throw new Exception("this is a server error");
-        }
+        [HttpGet("server-error")]
+        public ActionResult GetServerError() => throw new Exception("this is a server error");
 
         #endregion
     }

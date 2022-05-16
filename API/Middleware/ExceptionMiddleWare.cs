@@ -10,9 +10,9 @@ namespace API.Middleware
 {
     public class ExceptionMiddleWare
     {
-        private RequestDelegate _next; // handles the request
-        private ILogger<ExceptionMiddleWare> _logger; // write a log message class of exception middleware is passed here 
-        private IHostEnvironment _env; // Compares the current host environment name against the specified value
+        private readonly RequestDelegate _next; // handles the request moves to next piece of middleware 
+        private readonly ILogger<ExceptionMiddleWare> _logger; // write a log message class of exception middleware is passed here ,I logger matches class type. 
+        private readonly IHostEnvironment _env; // Compares the current host environment name against the specified value
 
         public ExceptionMiddleWare(RequestDelegate next, ILogger<ExceptionMiddleWare> logger, IHostEnvironment env)
         {
@@ -20,7 +20,7 @@ namespace API.Middleware
             _logger = logger;
             _env = env;
 
-            #region MyRegion
+            #region constructor explained 
 
 /*
  * RequestDelegate next,ILogger<ExceptionMiddleWare> logger,IHostEnvironment env

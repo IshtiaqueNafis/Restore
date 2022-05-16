@@ -28,7 +28,13 @@ namespace API.Controllers
         #region GetProducts(int id) ==> method: get, get a single product from database
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Product>> GetProduct(int id) =>    await _context.Products.FindAsync(id);
+        public async Task<ActionResult<Product>> GetProduct(int id)
+        {
+           var product =  await _context.Products.FindAsync(id);
+           if(product == null) return NotFound();
+           return product;
+        }  
+            
 
         #endregion
 
