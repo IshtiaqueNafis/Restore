@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {Alert, Button, ButtonGroup, Container, List, ListItem, ListItemText, Typography} from "@mui/material";
 import agent from "../../app/api/agent";
-import {log} from "util";
+
 
 const AboutPage = () => {
     const [validationErrors, setValidationErrors] = useState<string[]>([]);

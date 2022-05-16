@@ -1,6 +1,6 @@
 ﻿import axios, {AxiosError, AxiosResponse} from "axios";
 import {toast} from "react-toastify";
-
+import {history} from '../..' // this means index 
 axios.defaults.baseURL = 'http://localhost:5000/api/'; // the base url
 const responseBody = (response: AxiosResponse) => response.data; // base responsebody 
 
@@ -16,7 +16,7 @@ axios.interceptors.response.use(response => {
                 const modelStateErrors: string[] = [];
                 // @ts-ignore
                 for (const key in data.errors) {
-                    console.log(key) // probnlem 1, problem 2 
+                   
                     // @ts-ignore
                     if (data.errors[key]){
                         // @ts-ignore
@@ -34,8 +34,7 @@ axios.interceptors.response.use(response => {
             toast.error(data.title);
             break;
         case 500:
-            // @ts-ignore
-            toast.error(data.title);
+            history.push("/server-error")
             break;
         default:
             break;
