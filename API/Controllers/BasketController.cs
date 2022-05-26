@@ -22,32 +22,18 @@ namespace API.Controllers
 
         #region ***Task<ActionResult<Basket>> GetBasket()***--->get Baskets-->method:get().
 
-        [HttpGet]
+        [HttpGet(Name = "GetBasket")]
         public async Task<ActionResult<BasketDto>> GetBasket()
         {
             Basket basket = await RetrievedBasket();
             if (basket == null) return NotFound();
-            return new BasketDto
-            {
-                Id = basket.Id,
-                BuyerId = basket.BuyerId,
-                Items = basket.Items.Select(item => new BasketItemDto
-                {
-                    ProductId = item.ProductId,
-                    Name = item.Product.Name,
-                    Price = item.Product.Price,
-                    PictureUrl = item.Product.PictureUrl,
-                    Brand = item.Product.Brand,
-                    Quantity = item.Quantity
-                }).ToList()
-
-            };
+            return MapBasketToDto(basket);
         }
 
         #endregion
 
         [HttpPost]
-        public async Task<ActionResult> AddItemToBasket(int productId, int quantity)
+        public async Task<ActionResult<BasketDto>> AddItemToBasket(int productId, int quantity)
         {
             var basket = await RetrievedBasket();
             if (basket == null)
@@ -60,7 +46,7 @@ namespace API.Controllers
             if (product == null) return NotFound();
             basket.AddItem(product, quantity);
             var result = await _context.SaveChangesAsync() > 0;
-            if (result) return StatusCode(201);
+            if (result) return CreatedAtRoute("GetBasket", MapBasketToDto((basket)));
 
             return BadRequest(new ProblemDetails {Title = "problem saving"});
         }
@@ -69,13 +55,13 @@ namespace API.Controllers
         public async Task<ActionResult> RemoveItemFromBasket(int productId, int quantity)
         {
             var basket = await RetrievedBasket();
-            Console.WriteLine(basket);
-            if(basket == null) return NotFound();
-            basket.RemoveItem(productId,quantity);
+            if (basket == null) return NotFound();
+            basket.RemoveItem(productId, quantity);
+
 
             var result = await _context.SaveChangesAsync() > 0;
-            if(result) return Ok();
-            
+            if (result) return Ok();
+
             return BadRequest(new ProblemDetails {Title = "problem removing product"});
         }
 
@@ -93,16 +79,40 @@ namespace API.Controllers
 
         private Basket CreateBasket()
         {
-            #region ***creating buyer id *** 
+            #region ***creating buyer id ***
 
             string buyerId = Guid.NewGuid().ToString(); // creates lobally unique identifier.
             CookieOptions cookieOptions = new CookieOptions {IsEssential = true, Expires = DateTime.Now.AddDays(30)};
             Response.Cookies.Append("buyerId", buyerId, cookieOptions); // adds to server 
 
             #endregion
+
             Basket basket = new Basket {BuyerId = buyerId};
             _context.Baskets.Add(basket);
             return basket;
+        }
+
+        #endregion
+
+
+        #region MapBasketToDto(Basket basket) --> map basket DTO
+
+        private BasketDto MapBasketToDto(Basket basket)
+        {
+            return new BasketDto
+            {
+                Id = basket.Id,
+                BuyerId = basket.BuyerId,
+                Items = basket.Items.Select(item => new BasketItemDto
+                {
+                    ProductId = item.ProductId,
+                    Name = item.Product.Name,
+                    Price = item.Product.Price,
+                    PictureUrl = item.Product.PictureUrl,
+                    Brand = item.Product.Brand,
+                    Quantity = item.Quantity
+                }).ToList()
+            };
         }
 
         #endregion
