@@ -17,16 +17,19 @@ import {getCookie} from "../utils/utils";
 import agent from "../api/agent";
 import LoadingComponent from "./LoadingComponent";
 import CheckOutPage from "../../features/checkoout/CheckOutPage";
+import {useAppDispatch} from "../redux/configureStore";
+import {setBasket} from "../../features/Basket/basketSlice";
 
 function App() {
 
-    const {setBasket} = useStoreContext();
+
     const [loading, setLoading] = useState(true);
+    const dispatch = useAppDispatch();
 
     useEffect(() => {
         const buyerId = getCookie('buyerId');
         if (buyerId) {
-            agent.Basket.get().then(basket => setBasket(basket)).catch(error => console.log(error)).finally(() => setLoading(false));
+            agent.Basket.get().then(basket => dispatch(setBasket(basket))).catch(error => console.log(error)).finally(() => setLoading(false));
         } else {
             setLoading(false);
         }
