@@ -6,7 +6,8 @@ import {currencyFormat} from "../../app/utils/utils";
 export default function BasketSummary() {
     const {basket} = useStoreContext();
     const subTotal = basket?.items.reduce((sum, item) => sum + (item.quantity * item.price), 0) ??0;
-    const deliveryFee = subTotal > 1000 ? 0 : 500;
+    const deliveryFee = subTotal > 1000 ? 0 : 500
+   
     
     return (
         

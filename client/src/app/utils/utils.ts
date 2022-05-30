@@ -3,4 +3,4 @@
     return b ? b.pop() : "";
 }
 
-export const currencyFormat = (amount: number) => `$ ${(amount / 100).toFixed(2)}`;
+export const currencyFormat = (amount: number) => `${(amount / 100).toFixed(2)}`;
