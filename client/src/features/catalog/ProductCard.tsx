@@ -5,22 +5,17 @@ import {Link} from "react-router-dom";
 import agent from "../../app/api/agent";
 import {LoadingButton} from "@mui/lab";
 import {currencyFormat} from "../../app/utils/utils";
-import {useAppDispatch} from "../../app/redux/configureStore";
-import {setBasket} from "../Basket/basketSlice";
+import {useAppDispatch, useAppSelector} from "../../app/redux/configureStore";
+import {addBasketItemAsync, setBasket} from "../Basket/basketSlice";
 
 interface Props {
     product: Product
 }
 
 const ProductCard = ({product}: Props) => {
- 
+    const {status} = useAppSelector(state => state.basket);
     const dispatch = useAppDispatch();
-    const [loading, setLoading] = useState(false);
 
-    function handleAdditem(productId: number) {
-        setLoading(true);
-        agent.Basket.addItem(productId).then(basket => dispatch(setBasket(basket))).catch((error) => console.log(error)).finally(() => setLoading(false));
-    }
 
     return (
         <Card>
@@ -50,7 +45,9 @@ const ProductCard = ({product}: Props) => {
                 </Typography>
             </CardContent>
             <CardActions>
-                <LoadingButton loading={loading} onClick={() => handleAdditem(product.id)}>Add to cart</LoadingButton>
+                <LoadingButton loading={status.includes(`pendingAddItem ${product.id}`)} onClick={() => {
+                    dispatch(addBasketItemAsync({productId: product.id}));
+                }}>Add to cart</LoadingButton>
                 <Button component={Link} to={`/catalog/${product.id}`} size="small">View</Button>
             </CardActions>
         </Card>

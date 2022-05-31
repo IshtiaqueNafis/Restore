@@ -19,38 +19,13 @@ import {LoadingButton} from "@mui/lab";
 import BasketSummary from "./BasketSummary";
 import {Link} from "react-router-dom";
 import {useAppDispatch, useAppSelector} from "../../app/redux/configureStore";
-import {removeItem, setBasket} from "./basketSlice";
+import {addBasketItemAsync, removeBasketItemAsync, setBasket} from "./basketSlice";
 
 const BasketPage = () => {
 
-    const {basket} = useAppSelector(state => state.basket);
+    const {basket, status} = useAppSelector(state => state.basket);
     const dispatch = useAppDispatch();
-    const [status, setStatus] = useState({
-        loading: false,
-        name: ''
-    });
 
-    function handleAddItem(productId: number, name: string) {
-        setStatus({
-            loading: true,
-            name
-        });
-        agent.Basket.addItem(productId).then(basket => dispatch(setBasket(basket))).catch(error => console.log(error)).finally(() => setStatus({
-            loading: false,
-            name: ''
-        }));
-    }
-
-    function handleRemoveItem(productId: number, quantity: number = 1, name: string) {
-        setStatus({
-            loading: true,
-            name
-        });
-        agent.Basket.removeItem(productId, quantity).then(() => dispatch(removeItem({productId, quantity}))).catch(error => console.log(error)).finally(() => setStatus({
-            loading: false,
-            name: ''
-        }));
-    }
 
     if (!basket) return <Typography variant={'h3'}>Your Basket is empty</Typography>
     return (
@@ -84,14 +59,19 @@ const BasketPage = () => {
 
                                 <TableCell align="right">${(item.price / 100).toFixed(2)}</TableCell>
                                 <TableCell align="center">
-                                    <LoadingButton loading={status.loading && status.name === `rem${item.productId}`}
+                                    <LoadingButton loading={status === `removeItem ${item.productId} rem`}
                                                    color={'error'}
-                                                   onClick={() => handleRemoveItem(item.productId, 1, `rem${item.productId}`)}>
+                                                   onClick={() => dispatch(removeBasketItemAsync({
+                                                       productId: item.productId,
+                                                       quantity:1,
+                                                       name:'rem'
+                                                   }))}
+                                    >
                                         <Remove/>
                                     </LoadingButton>
                                     {item.quantity}
-                                    <LoadingButton loading={status.loading && status.name === `add${item.productId}`}
-                                                   onClick={() => handleAddItem(item.productId, `add${item.productId}`)}>
+                                    <LoadingButton loading={status === `removeItem ${item.productId}`}
+                                                   onClick={() => dispatch(addBasketItemAsync({productId: item?.productId}))}>
                                         <Add/>
                                     </LoadingButton>
                                 </TableCell>
@@ -101,9 +81,13 @@ const BasketPage = () => {
                                 <TableCell align="right">
                                     <LoadingButton
 
-                                        loading={status.loading && status.name === `delete${item.productId}`}
+                                        loading={status === `removeItem ${item.productId} del`}
                                         color={'error'}
-                                        onClick={() => handleRemoveItem(item.productId, item.quantity, `delete${item.productId}`)}>
+                                        onClick={() => dispatch(removeBasketItemAsync({
+                                            productId: item.productId,
+                                            quantity: item.quantity,
+                                            name:'del'
+                                        }))}>
                                         <Delete/>
 
                                     </LoadingButton>
