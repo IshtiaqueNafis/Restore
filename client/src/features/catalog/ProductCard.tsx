@@ -4,20 +4,22 @@ import {Product} from "../../app/models/product";
 import {Link} from "react-router-dom";
 import agent from "../../app/api/agent";
 import {LoadingButton} from "@mui/lab";
-import {useStoreContext} from "../../app/context/StoreContext";
 import {currencyFormat} from "../../app/utils/utils";
+import {useAppDispatch} from "../../app/redux/configureStore";
+import {setBasket} from "../Basket/basketSlice";
 
 interface Props {
     product: Product
 }
 
 const ProductCard = ({product}: Props) => {
-    const {setBasket} = useStoreContext();
+ 
+    const dispatch = useAppDispatch();
     const [loading, setLoading] = useState(false);
 
     function handleAdditem(productId: number) {
         setLoading(true);
-        agent.Basket.addItem(productId).then(basket => setBasket(basket)).catch((error) => console.log(error)).finally(() => setLoading(false));
+        agent.Basket.addItem(productId).then(basket => dispatch(setBasket(basket))).catch((error) => console.log(error)).finally(() => setLoading(false));
     }
 
     return (

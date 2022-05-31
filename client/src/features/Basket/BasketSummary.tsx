@@ -2,9 +2,10 @@
 import {useStoreContext} from "../../app/context/StoreContext";
 import {useState} from "react";
 import {currencyFormat} from "../../app/utils/utils";
+import {useAppSelector} from "../../app/redux/configureStore";
 
 export default function BasketSummary() {
-    const {basket} = useStoreContext();
+    const {basket} = useAppSelector(state => state.basket);
     const subTotal = basket?.items.reduce((sum, item) => sum + (item.quantity * item.price), 0) ??0;
     const deliveryFee = subTotal > 1000 ? 0 : 500
    

@@ -15,11 +15,13 @@ import {Product} from "../../app/models/product";
 import agent from "../../app/api/agent";
 import NotFound from "../../app/errors/NotFound";
 import LoadingComponent from "../../app/layout/LoadingComponent";
-import {useStoreContext} from "../../app/context/StoreContext";
 import {LoadingButton} from "@mui/lab";
+import {useAppDispatch, useAppSelector} from "../../app/redux/configureStore";
+import {removeItem, setBasket} from "../Basket/basketSlice";
 
 const ProductDetails = () => {
-    const {basket, setBasket, removeItem} = useStoreContext();
+    const {basket} = useAppSelector(state => state.basket);
+    const dispatch = useAppDispatch();
     const {id} = useParams<{ id: string }>()
     const [product, setProduct] = useState<Product | null>(null);
     const [loading, setLoading] = useState(true);
@@ -46,11 +48,11 @@ const ProductDetails = () => {
         setSubmitting(true); // loading flag 
         if (!item || quantity > item.quantity) { // means the item is not on the basket. 
             const updateQuantity = item ? quantity - item.quantity : quantity
-            agent.Basket.addItem(product?.id!, updateQuantity).then(basket => setBasket(basket)).catch(error => console.log(error)).finally(() => setSubmitting(false))
+            agent.Basket.addItem(product?.id!, updateQuantity).then(basket => dispatch( setBasket(basket))).catch(error => console.log(error)).finally(() => setSubmitting(false))
 
         } else {
             const updateQuantity = item.quantity - quantity;
-            agent.Basket.removeItem(product?.id!, updateQuantity).then(() => removeItem(product?.id!, updateQuantity)).catch(error => console.log(error)).finally(() => setSubmitting(false))
+            agent.Basket.removeItem(product?.id!, updateQuantity).then(() => dispatch(removeItem({productId:product?.id!,quantity: updateQuantity}))).catch(error => console.log(error)).finally(() => setSubmitting(false))
         }
     }
 
@@ -108,7 +110,7 @@ const ProductDetails = () => {
                     </Grid>
                     <Grid item xs={6}>
                         <LoadingButton
-                            disabled={item?.quantity===quantity || !item&& quantity ==0}
+                            disabled={item?.quantity===quantity || !item&& quantity ===0}
                             loading={submitting}
                             onClick={handleUpdateCart} sx={{height: '55px'}} color={'primary'} size={'large'}
                                        variant={'contained'}
