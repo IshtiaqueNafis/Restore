@@ -11,20 +11,19 @@ import {
     Typography
 } from "@mui/material";
 import {useParams} from "react-router-dom";
-import {Product} from "../../app/models/product";
-import agent from "../../app/api/agent";
 import NotFound from "../../app/errors/NotFound";
 import LoadingComponent from "../../app/layout/LoadingComponent";
 import {LoadingButton} from "@mui/lab";
 import {useAppDispatch, useAppSelector} from "../../app/redux/configureStore";
-import {addBasketItemAsync, removeBasketItemAsync, setBasket} from "../Basket/basketSlice";
+import {addBasketItemAsync, removeBasketItemAsync} from "../Basket/basketSlice";
+import {fetchSingleProductAsync, productSelectors} from "./catalogSlice";
 
 const ProductDetails = () => {
     const {basket, status} = useAppSelector(state => state.basket);
+    const {status: productStatus} = useAppSelector(state => state.catalog);
     const dispatch = useAppDispatch();
     const {id} = useParams<{ id: string }>()
-    const [product, setProduct] = useState<Product | null>(null);
-    const [loading, setLoading] = useState(true);
+    const product = useAppSelector(state => productSelectors.selectById(state, id));
     const [quantity, setQuantity] = useState(0);
 
     const item = basket?.items.find(i => i.productId === product?.id);
@@ -32,10 +31,8 @@ const ProductDetails = () => {
 
     useEffect(() => {
         if (item) setQuantity(item.quantity);
-        agent.Catalog.details(parseInt(id)).then(product => setProduct(product))
-            .catch(e => console.log(e))
-            .finally(() => setLoading(false));
-    }, [id, item])
+        if (!product) dispatch(fetchSingleProductAsync(parseInt(id)));
+    }, [id, item, dispatch, product])
 
     function handleInputChange(event: any) {
         if (event.target.value > 0) {
@@ -55,7 +52,7 @@ const ProductDetails = () => {
         }
     }
 
-    if (loading) return <LoadingComponent message={'Loading Product'}/>
+    if (productStatus === 'pending') return <LoadingComponent message={'Loading Product'}/>
     if (!product) return <NotFound/>
 
     return (

@@ -2,13 +2,13 @@
 import {basketSlice} from "../../features/Basket/basketSlice";
 import {TypedUseSelectorHook, useDispatch, useSelector} from "react-redux";
 import logger from "redux-logger";
-
-
+import {catalogSlice} from "../../features/catalog/catalogSlice";
 
 
 export const store = configureStore({
     reducer: {
-        basket: basketSlice.reducer
+        basket: basketSlice.reducer,
+        catalog: catalogSlice.reducer
     },
     middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(logger),
 
