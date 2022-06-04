@@ -47,7 +47,7 @@ namespace API.models
 
         public void RemoveItem(int productId, int quantity)
         {
-            var item = Items.FirstOrDefault(item => item.ProductId == productId); // find the item 
+            var item = Items.FirstOrDefault(i => i.ProductId == productId); // find the item 
             if (item == null) return; // means no item was there 
             item.Quantity -= quantity; // make the quantity decrease 
 

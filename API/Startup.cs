@@ -24,8 +24,11 @@ namespace API
         {
             services.AddControllers();
             services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo {Title = "API", Version = "v1"}); });
+
+            #region *** Configuring Db Context ***
             services.AddDbContext<StoreContext>(opt =>
                 opt.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
+            #endregion
             services.AddCors(); //add cors 
         }
 

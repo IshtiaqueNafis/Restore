@@ -22,7 +22,7 @@ namespace API.Controllers
 
         #region ***Task<ActionResult<Basket>> GetBasket()***--->get Baskets-->method:get().
 
-        [HttpGet(Name = "GetBasket")]
+        [HttpGet(Name = "GetBasket")] // rename to GetBasket
         public async Task<ActionResult<BasketDto>> GetBasket()
         {
             Basket basket = await RetrievedBasket();
@@ -35,18 +35,15 @@ namespace API.Controllers
         [HttpPost]
         public async Task<ActionResult<BasketDto>> AddItemToBasket(int productId, int quantity)
         {
-            var basket = await RetrievedBasket();
-            if (basket == null)
-            {
-                basket = CreateBasket();
-            }
+            var basket = await RetrievedBasket() ?? CreateBasket(); 
+            // terrinary if there is a basket retive it. if not create a new one. 
 
             // ReSharper disable once HeapView.BoxingAllocation
             Product product = await _context.Products.FindAsync(productId);
             if (product == null) return BadRequest(new ProblemDetails {Title = "Product not found"});
             basket.AddItem(product, quantity);
-            var result = await _context.SaveChangesAsync() > 0;
-            if (result) return CreatedAtRoute("GetBasket", MapBasketToDto((basket)));
+            bool result = await _context.SaveChangesAsync() > 0;
+            if (result) return CreatedAtRoute("GetBasket", MapBasketToDto((basket))); // shows new basket being created with created at Route. 
 
             return BadRequest(new ProblemDetails {Title = "problem saving"});
         }

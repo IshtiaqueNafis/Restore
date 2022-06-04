@@ -18,7 +18,7 @@ namespace API.Controllers
             _context = context;
         }
 
-        #region GetProducts() --> method: get returns all products 
+        #region GetProducts() --> method: get returns all products : functionType:Task<ActionResult<List<Product>>>
 
         [HttpGet]
         public async Task<ActionResult<List<Product>>> GetProducts() =>  await _context.Products.ToListAsync();
@@ -27,7 +27,7 @@ namespace API.Controllers
 
         #region GetProducts(int id) ==> method: get, get a single product from database
 
-        [HttpGet("{id}")]
+        [HttpGet("{id}")] // this is the route that the this parameter accepts. 
         public async Task<ActionResult<Product>> GetProduct(int id)
         {
            var product =  await _context.Products.FindAsync(id);

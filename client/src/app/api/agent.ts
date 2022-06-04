@@ -1,15 +1,17 @@
 ﻿import axios, {AxiosError, AxiosResponse} from "axios";
 import {toast} from "react-toastify";
 import {history} from '../..' // this means index 
-axios.defaults.baseURL = 'http://localhost:5000/api/'; // the base url
-axios.defaults.withCredentials = true;
-const responseBody = (response: AxiosResponse) => response.data; // base responsebody 
 
+//region **axios settings**
+axios.defaults.baseURL = 'http://localhost:5000/api/'; // the base url to get the backend. 
+axios.defaults.withCredentials = true;
+const responseBody = (response: AxiosResponse) => response.data; // base responsebody , return data from the body. 
+//endregion 
 //region ***axios interceptors used for respnse back from requests*** 
 axios.interceptors.response.use(response => {
-    return response
-}, (error: AxiosError) => {
-    const {data, status} = error.response!;
+    return response; // returns normal response if there is no error. 
+}, (error: AxiosError) => { // check for error. 
+    const {data, status} = error.response!; // get data and status from the error.response. 
     switch (status) {
         case 400:
             // @ts-ignore
@@ -17,18 +19,18 @@ axios.interceptors.response.use(response => {
                 const modelStateErrors: string[] = [];
                 // @ts-ignore
                 for (const key in data.errors) {
-
+                       // find the key in data 
                     // @ts-ignore
                     if (data.errors[key]) {
                         // @ts-ignore
-                        modelStateErrors.push(data.errors[key]);
+                        modelStateErrors.push(data.errors[key]); // find the errors and push it in. 
                     }
 
                 }
-                throw modelStateErrors.flat();
+                throw modelStateErrors.flat(); //make the errors into sentence. 
             }
             // @ts-ignore
-            toast.error(data.title);
+            toast.error(data.title); 
             break;
         case 401:
             // @ts-ignore
@@ -43,6 +45,8 @@ axios.interceptors.response.use(response => {
     return Promise.reject(error.response);
 })
 //endregion
+
+// requests set up 
 const requests = {
     get: (url: string) => axios.get(url, { headers: { "Access-Control-Allow-Credentials": "true" } }).then(responseBody),
     post: (url: string, body: {}, ) => axios.post(url, body,{ headers: { "Access-Control-Allow-Credentials": "true" } }).then(responseBody),

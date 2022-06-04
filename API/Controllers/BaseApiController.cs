@@ -2,8 +2,8 @@
 
 namespace API.Controllers
 {
-        [ApiController]
-        [Route("api/[controller]")] 
+        [ApiController] // ApiController means it will be a controller 
+        [Route("api/[controller]")]  // route api/[conroller] means it will be name 
         public class BaseApiController:ControllerBase
         {
             

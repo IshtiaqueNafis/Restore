@@ -9,7 +9,7 @@ namespace API.data
         //create a list of product and save it to database. 
         public static void Initalize(StoreContext context)
         {
-            if(context.Products.Any()) return;
+            if(context.Products.Any()) return; // means if there is a product list r means do not seed data 
             var products = new List<Product>
             {
                		new Product
@@ -212,9 +212,9 @@ namespace API.data
             foreach (var product in products)
             {
                 context.Products.Add(product);
-            }
+            }// loop through each item and save it. 
 
-            context.SaveChanges();
+            context.SaveChanges(); // save changes the product. 
             
         }
     }

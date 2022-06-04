@@ -25,8 +25,8 @@ namespace API
 
             try
             {
-                context.Database.Migrate();
-                DbIntializer.Initalize(context);
+                context.Database.Migrate(); /// try to migrate database 
+                DbIntializer.Initalize(context); // seed database 
             }
             catch (Exception e)
             {

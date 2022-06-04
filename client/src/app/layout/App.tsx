@@ -12,7 +12,6 @@ import 'react-toastify/dist/ReactToastify.css'
 import ServerError from "../errors/ServerError";
 import NotFound from "../errors/NotFound";
 import BasketPage from "../../features/Basket/BasketPage";
-import {useStoreContext} from "../context/StoreContext";
 import {getCookie} from "../utils/utils";
 import agent from "../api/agent";
 import LoadingComponent from "./LoadingComponent";
