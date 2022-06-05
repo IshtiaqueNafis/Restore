@@ -6,6 +6,8 @@ namespace API.Extensions
 {
     public static class ProductExtensions // will extend functionalty. 
     {
+        #region ***static IQueryable<Product> Sort(this IQueryable<Product> query, string orderBy) *** orders product 
+
         public static IQueryable<Product> Sort(this IQueryable<Product> query, string orderBy)
 
             #region *** IQueryable<Product> Sort(this IQueryable<Product> query, string orderBy)*** explained
@@ -30,5 +32,25 @@ namespace API.Extensions
             };
             return query;
         }
+        
+
+        #endregion
+
+        public static IQueryable<Product> Search(this IQueryable<Product> query, string searchTerm)
+        {
+            if (string.IsNullOrEmpty(searchTerm))
+            {
+                return query; // this means only the original will reutrn
+            }
+
+            var lowerCaseSearchTerm = searchTerm.Trim().ToLower(); // lowers the search term case 
+
+            return query.Where(p => p.Name.ToLower().Contains(lowerCaseSearchTerm)); 
+        }
+        
+        
     }
+    
+    
+    
 }

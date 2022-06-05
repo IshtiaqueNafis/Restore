@@ -22,10 +22,12 @@ namespace API.Controllers
         #region GetProducts() --> method: get returns all products : functionType:Task<ActionResult<List<Product>>>
 
         [HttpGet]
-        public async Task<ActionResult<List<Product>>> GetProducts(string orderBy)
+        public async Task<ActionResult<List<Product>>> GetProducts(string orderBy,
+            string searchTerm)
         {
             var query = _context.Products
                 .Sort(orderBy) // sort is from the productextension static classs
+                .Search(searchTerm)
                 .AsQueryable(); // queryable so it can be quie
 
 
