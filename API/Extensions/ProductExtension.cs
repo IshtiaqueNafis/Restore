@@ -55,9 +55,11 @@ namespace API.Extensions
 
         public static IQueryable<Product> Filter(this IQueryable<Product> query, string brands, string types)
         {
+            // will holdstring here 
             var brandList = new List<string>();
             var typeList = new List<string>();
 
+            //making list out of quieries
             if (!string.IsNullOrEmpty(brands))
             {
                 brandList.AddRange(brands.ToLower().Split(",").ToList());
@@ -71,7 +73,7 @@ namespace API.Extensions
             query = query.Where(p =>
                 brandList.Count == 0 ||
                 brandList.Contains(p.Brand.ToLower())); // if its 0 do not anything if its not return ir 
-//check for customer list.             
+//check for type list         
             query = query.Where(p =>
                 typeList.Count == 0 ||
                 typeList.Contains(p.Type.ToLower()));

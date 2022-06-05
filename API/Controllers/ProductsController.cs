@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using API.data;
 using API.Extensions;
 using API.models;
+using API.RequestHelpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -22,17 +24,20 @@ namespace API.Controllers
         #region GetProducts() --> method: get returns all products : functionType:Task<ActionResult<List<Product>>>
 
         [HttpGet]
-        public async Task<ActionResult<List<Product>>> GetProducts(string orderBy,
-            string searchTerm, string brands, string types)
+        public async Task<ActionResult<PagedList<Product>>> GetProducts([FromQuery] ProductParams productParams)
+            // From Quey allows object o be passed
         {
             var query = _context.Products
-                .Sort(orderBy) // sort is from the productextension static classs
-                .Search(searchTerm)
-                .Filter(brands, types)
+                .Sort(productParams.OrderBy) // sort is from the productextension static classs
+                .Search(productParams.SearchTerm)
+                .Filter(productParams.Brands, productParams.Types)
                 .AsQueryable(); // queryable so it can be quie
 
 
-            return await query.ToListAsync();
+            var products =
+                await PagedList<Product>.ToPagedList(query, productParams.PageNumber, productParams.PageSize);
+            Response.AddPaginationHeader(products.MetaData);
+            return products;
         }
 
         #endregion
