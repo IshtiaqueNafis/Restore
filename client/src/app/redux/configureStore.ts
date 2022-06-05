@@ -18,5 +18,5 @@ export type RootState = ReturnType<typeof store.getState>; //type renames a stat
 export type AppDispatch = typeof store.dispatch; // this dispatches actions same as dispatch = useDispatch()
 
 //custom hook
-export const useAppDispatch = () => useDispatch<AppDispatch>();  //useApp
+export const useAppDispatch = () => useDispatch<AppDispatch>();  //useApp rootstate 
 export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;

@@ -3,9 +3,13 @@ import {Product} from "../../app/models/product";
 import agent from "../../app/api/agent";
 import {RootState} from "../../app/redux/configureStore";
 
+//region ***ProductAdapter***
 const productAdapter = createEntityAdapter<Product>();
+//endregion
 
+//region *** fetchProductsAsync-->param:none,return:Product[] *** 
 export const fetchProductsAsync = createAsyncThunk<Product[]>(
+    // will return a list of product 
     'catalog/fetchProductsAsync',
     async (_, thunkAPI) => {
         try {
@@ -17,7 +21,9 @@ export const fetchProductsAsync = createAsyncThunk<Product[]>(
         }
     }
 )
+//endregion
 
+//region ***fetchSingleProductAsync --> paradm:productId:number,return: product ***
 export const fetchSingleProductAsync = createAsyncThunk<Product, number>(
     'catalog/fetchSingleProductAsync',
     async (productId, thunkAPI) => {
@@ -30,6 +36,7 @@ export const fetchSingleProductAsync = createAsyncThunk<Product, number>(
         }
     }
 )
+//endregion
 
 export const catalogSlice = createSlice({
     name: "catalog",
