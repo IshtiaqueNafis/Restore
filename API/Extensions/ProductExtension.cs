@@ -6,7 +6,7 @@ namespace API.Extensions
 {
     public static class ProductExtensions // will extend functionalty. 
     {
-        #region ***static IQueryable<Product> Sort(this IQueryable<Product> query, string orderBy) *** orders product 
+        #region ***static IQueryable<Product> Sort(this IQueryable<Product> query, string orderBy) *** orders product
 
         public static IQueryable<Product> Sort(this IQueryable<Product> query, string orderBy)
 
@@ -32,9 +32,10 @@ namespace API.Extensions
             };
             return query;
         }
-        
 
         #endregion
+
+        #region ***IQueryable<Product> Search(this IQueryable<Product> query, string searchTerm)*** --> returns a list of product based on search
 
         public static IQueryable<Product> Search(this IQueryable<Product> query, string searchTerm)
         {
@@ -45,12 +46,38 @@ namespace API.Extensions
 
             var lowerCaseSearchTerm = searchTerm.Trim().ToLower(); // lowers the search term case 
 
-            return query.Where(p => p.Name.ToLower().Contains(lowerCaseSearchTerm)); 
+            return query.Where(p => p.Name.ToLower().Contains(lowerCaseSearchTerm));
         }
-        
-        
+
+        #endregion
+
+        #region ***IQueryable<Product> Filter(this IQueryable<Product> query, string brands, string types)***
+
+        public static IQueryable<Product> Filter(this IQueryable<Product> query, string brands, string types)
+        {
+            var brandList = new List<string>();
+            var typeList = new List<string>();
+
+            if (!string.IsNullOrEmpty(brands))
+            {
+                brandList.AddRange(brands.ToLower().Split(",").ToList());
+            }
+
+            if (!string.IsNullOrEmpty(types))
+            {
+                typeList.AddRange(types.ToLower().Split(",").ToList());
+            }
+//check for brandlist 
+            query = query.Where(p =>
+                brandList.Count == 0 ||
+                brandList.Contains(p.Brand.ToLower())); // if its 0 do not anything if its not return ir 
+//check for customer list.             
+            query = query.Where(p =>
+                typeList.Count == 0 ||
+                typeList.Contains(p.Type.ToLower()));
+            return query;
+        }
+
+        #endregion
     }
-    
-    
-    
 }

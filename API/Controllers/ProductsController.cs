@@ -23,11 +23,12 @@ namespace API.Controllers
 
         [HttpGet]
         public async Task<ActionResult<List<Product>>> GetProducts(string orderBy,
-            string searchTerm)
+            string searchTerm, string brands, string types)
         {
             var query = _context.Products
                 .Sort(orderBy) // sort is from the productextension static classs
                 .Search(searchTerm)
+                .Filter(brands, types)
                 .AsQueryable(); // queryable so it can be quie
 
 
