@@ -2,13 +2,14 @@
 using System.Linq;
 using System.Threading.Tasks;
 using API.data;
+using API.Extensions;
 using API.models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers
 {
-  // menas api/Products
+    // menas api/Products
     public class ProductsController : BaseApiController
     {
         private readonly StoreContext _context;
@@ -21,7 +22,15 @@ namespace API.Controllers
         #region GetProducts() --> method: get returns all products : functionType:Task<ActionResult<List<Product>>>
 
         [HttpGet]
-        public async Task<ActionResult<List<Product>>> GetProducts() =>  await _context.Products.ToListAsync();
+        public async Task<ActionResult<List<Product>>> GetProducts(string orderBy)
+        {
+            var query = _context.Products
+                .Sort(orderBy) // sort is from the productextension static classs
+                .AsQueryable(); // queryable so it can be quie
+
+
+            return await query.ToListAsync();
+        }
 
         #endregion
 
@@ -30,14 +39,11 @@ namespace API.Controllers
         [HttpGet("{id}")] // this is the route that the this parameter accepts. 
         public async Task<ActionResult<Product>> GetProduct(int id)
         {
-           var product =  await _context.Products.FindAsync(id);
-           if(product == null) return NotFound();
-           return product;
-        }  
-            
+            var product = await _context.Products.FindAsync(id);
+            if (product == null) return NotFound();
+            return product;
+        }
 
         #endregion
-
-
     }
 }
