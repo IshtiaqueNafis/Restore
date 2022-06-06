@@ -19,7 +19,7 @@ axios.interceptors.response.use(response => {
                 const modelStateErrors: string[] = [];
                 // @ts-ignore
                 for (const key in data.errors) {
-                       // find the key in data 
+                    // find the key in data 
                     // @ts-ignore
                     if (data.errors[key]) {
                         // @ts-ignore
@@ -30,7 +30,7 @@ axios.interceptors.response.use(response => {
                 throw modelStateErrors.flat(); //make the errors into sentence. 
             }
             // @ts-ignore
-            toast.error(data.title); 
+            toast.error(data.title);
             break;
         case 401:
             // @ts-ignore
@@ -48,10 +48,13 @@ axios.interceptors.response.use(response => {
 
 // requests set up 
 const requests = {
-    get: (url: string) => axios.get(url, { headers: { "Access-Control-Allow-Credentials": "true" } }).then(responseBody),
-    post: (url: string, body: {}, ) => axios.post(url, body,{ headers: { "Access-Control-Allow-Credentials": "true" } }).then(responseBody),
-    put: (url: string, body: {}) => axios.put(url, body,{ headers: { "Access-Control-Allow-Credentials": "true" } }).then(responseBody),
-    delete: (url: string) => axios.delete(url,{ headers: { "Access-Control-Allow-Credentials": "true" } }).then(responseBody)
+    get: (url: string, params?: URLSearchParams) => axios.get(url, {
+        params,
+        headers: {"Access-Control-Allow-Credentials": "true"}
+    }).then(responseBody),
+    post: (url: string, body: {},) => axios.post(url, body, {headers: {"Access-Control-Allow-Credentials": "true"}}).then(responseBody),
+    put: (url: string, body: {}) => axios.put(url, body, {headers: {"Access-Control-Allow-Credentials": "true"}}).then(responseBody),
+    delete: (url: string) => axios.delete(url, {headers: {"Access-Control-Allow-Credentials": "true"}}).then(responseBody)
 };
 
 const TestErrors = {
@@ -66,11 +69,12 @@ const Basket = {
     get: () => requests.get('basket'),
     addItem: (productId: number, quantity: number = 1) => requests.post(`basket?productId=${productId}&quantity=${quantity}`, {}),
     removeItem: (productId: number, quantity: number = 1) => requests.delete(`basket?productId=${productId}&quantity=${quantity}`)
-    
+
 }
 const Catalog = {
-    list: () => requests.get('products'), // returns a list of products here 
-    details: (id: number) => requests.get(`products/${id}`) //return product details here 
+    list: (params: URLSearchParams) => requests.get('products', params), // returns a list of products here 
+    details: (id: number) => requests.get(`products/${id}`), //return product details here 
+    fetchFilters: () => requests.get("products/filters")
 }
 const agent = {
     Catalog,

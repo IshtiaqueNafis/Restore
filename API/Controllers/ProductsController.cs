@@ -21,7 +21,7 @@ namespace API.Controllers
             _context = context;
         }
 
-        #region GetProducts() --> method: get returns all products : functionType:Task<ActionResult<List<Product>>>
+        #region Task<ActionResult<PagedList<Product>>> GetProducts([FromQuery] ProductParams productParams) --> returns productlist with product inside
 
         [HttpGet]
         public async Task<ActionResult<PagedList<Product>>> GetProducts([FromQuery] ProductParams productParams)
@@ -53,5 +53,14 @@ namespace API.Controllers
         }
 
         #endregion
+
+        [HttpGet("filters")]
+        public async Task<IActionResult> GetFilters()
+        {
+            var brands = await _context.Products.Select(p => p.Brand).Distinct().ToListAsync();
+
+            var types = await _context.Products.Select(p => p.Type).Distinct().ToListAsync();
+            return Ok(new {brands, types});
+        }
     }
 }
