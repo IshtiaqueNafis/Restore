@@ -4,9 +4,9 @@ using API.models;
 
 namespace API.Extensions
 {
-    public static class ProductExtensions // will extend functionalty. 
+    public static class ProductExtensions // will extend functionalty of the product class extension methods are static in their nature. 
     {
-        #region ***static IQueryable<Product> Sort(this IQueryable<Product> query, string orderBy) *** orders product
+        #region ***static IQueryable<Product> Sort(this IQueryable<Product> query, string orderBy) *** sort product using linq order
 
         public static IQueryable<Product> Sort(this IQueryable<Product> query, string orderBy)
 
@@ -19,23 +19,25 @@ namespace API.Extensions
             #endregion
 
         {
-            if (string.IsNullOrWhiteSpace(orderBy))
+            if (string.IsNullOrWhiteSpace(orderBy)) // check if it is null or white space do orderby. 
             {
                 return query.OrderBy(p => p.Name);
             }
 
             query = orderBy switch
             {
-                "price" => query.OrderBy(p => p.Price),
-                "priceDesc" => query.OrderByDescending(p => p.Price),
+                "price" => query.OrderBy(p => p.Price), // when price is passed 
+                "priceDesc" => query.OrderByDescending(p => p.Price), // when priceDesc passed 
                 _ => query.OrderBy(p => p.Name)
             };
             return query;
         }
 
         #endregion
+        
+        
 
-        #region ***IQueryable<Product> Search(this IQueryable<Product> query, string searchTerm)*** --> returns a list of product based on search
+        #region ***IQueryable<Product> Search(this IQueryable<Product> query, string searchTerm)*** --> returns a list of product based on search using linq where
 
         public static IQueryable<Product> Search(this IQueryable<Product> query, string searchTerm)
         {
@@ -44,7 +46,7 @@ namespace API.Extensions
                 return query; // this means only the original will reutrn
             }
 
-            var lowerCaseSearchTerm = searchTerm.Trim().ToLower(); // lowers the search term case 
+            var lowerCaseSearchTerm = searchTerm.Trim().ToLower(); // lowers the search term case and get rid of white space 
 
             return query.Where(p => p.Name.ToLower().Contains(lowerCaseSearchTerm));
         }
@@ -62,7 +64,7 @@ namespace API.Extensions
             //making list out of quieries
             if (!string.IsNullOrEmpty(brands))
             {
-                brandList.AddRange(brands.ToLower().Split(",").ToList());
+                brandList.AddRange(brands.ToLower().Split(",").ToList()); 
             }
 
             if (!string.IsNullOrEmpty(types))
@@ -71,7 +73,7 @@ namespace API.Extensions
             }
 //check for brandlist 
             query = query.Where(p =>
-                brandList.Count == 0 ||
+                brandList.Count == 0 || // this is same as if and else statment
                 brandList.Contains(p.Brand.ToLower())); // if its 0 do not anything if its not return ir 
 //check for type list         
             query = query.Where(p =>

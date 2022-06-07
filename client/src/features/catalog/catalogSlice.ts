@@ -17,6 +17,7 @@ interface CatalogState {
 //endregion
 
 
+//region ***helper function init params,getAxiosParams***
 //region ***initParams --> set page filter info***
 const initParams = () => {
     return {
@@ -27,12 +28,13 @@ const initParams = () => {
 };
 
 //endregion
-//region *** get params***
+//region *** getAxiosParams()---> GET QUERY FROM API**
 function getAxiosParams(productParams: ProductParams) {
     const params = new URLSearchParams();
     params.append('pageNumber', productParams.pageNumber.toString());
     params.append('pageSize', productParams.pageSize.toString());
     params.append('orderBy', productParams.orderBy);
+    // check for optional
     if (productParams.searchTerm) params.append('searchTerm', productParams.searchTerm);
     if (productParams.brands) params.append('brands', productParams.brands.toString());
     if (productParams.types) params.append('types', productParams.types.toString());
@@ -41,6 +43,7 @@ function getAxiosParams(productParams: ProductParams) {
 
 }
 
+//endregion
 //endregion
 
 
@@ -51,7 +54,9 @@ const productAdapter = createEntityAdapter<Product>();
 //region *** asyncThunk Method***
 
 //region *** fetchProductsAsync-->param:none,return:Product[] *** 
-export const fetchProductsAsync = createAsyncThunk<Product[], void, { state: RootState }>(
+export const fetchProductsAsync = createAsyncThunk<Product[], void, 
+    { state: RootState } // this is nedded not to get undefined 
+    >(
     // will return a list of product 
     'catalog/fetchProductsAsync',
     async (_, thunkAPI) => {

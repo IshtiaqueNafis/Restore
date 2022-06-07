@@ -46,16 +46,19 @@ axios.interceptors.response.use(response => {
 })
 //endregion
 
-// requests set up 
+
+//region *** requests for get,post,put & delete ***
 const requests = {
     get: (url: string, params?: URLSearchParams) => axios.get(url, {
-        params,
+        // means params is bunch of string
+        params, // URLSearchParam comes from rest api this is a query string
         headers: {"Access-Control-Allow-Credentials": "true"}
     }).then(responseBody),
     post: (url: string, body: {},) => axios.post(url, body, {headers: {"Access-Control-Allow-Credentials": "true"}}).then(responseBody),
     put: (url: string, body: {}) => axios.put(url, body, {headers: {"Access-Control-Allow-Credentials": "true"}}).then(responseBody),
     delete: (url: string) => axios.delete(url, {headers: {"Access-Control-Allow-Credentials": "true"}}).then(responseBody)
 };
+//endregion
 
 const TestErrors = {
     get400Error: () => requests.get('buggy/bad-request'),

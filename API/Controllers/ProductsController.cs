@@ -31,11 +31,12 @@ namespace API.Controllers
                 .Sort(productParams.OrderBy) // sort is from the productextension static classs
                 .Search(productParams.SearchTerm)
                 .Filter(productParams.Brands, productParams.Types)
-                .AsQueryable(); // queryable so it can be quie
+                .AsQueryable(); // queryable so it can be delayed. this wont call 
 
 
             var products =
-                await PagedList<Product>.ToPagedList(query, productParams.PageNumber, productParams.PageSize);
+                await PagedList<Product>.ToPagedList(
+                    query, productParams.PageNumber, productParams.PageSize);
             Response.AddPaginationHeader(products.MetaData);
             return products;
         }

@@ -8,7 +8,7 @@
 
         public int PageSize
         {
-            get => _pageSize; 
+            get => _pageSize; // get the page size 
             set => _pageSize = value > MaxPageSize ? MaxPageSize : value; // this makes sure page size never goes over 59
         }
     }
