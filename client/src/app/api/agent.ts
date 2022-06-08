@@ -1,14 +1,22 @@
 ﻿import axios, {AxiosError, AxiosResponse} from "axios";
 import {toast} from "react-toastify";
-import {history} from '../..' // this means index 
+import {history} from '../..'
+import {PaginatedResponse} from "../models/pagination"; // this means index 
 
 //region **axios settings**
 axios.defaults.baseURL = 'http://localhost:5000/api/'; // the base url to get the backend. 
 axios.defaults.withCredentials = true;
+const sleep = () => new Promise(resolve => setTimeout(resolve, 1000));
 const responseBody = (response: AxiosResponse) => response.data; // base responsebody , return data from the body. 
 //endregion 
 //region ***axios interceptors used for respnse back from requests*** 
-axios.interceptors.response.use(response => {
+axios.interceptors.response.use(async response => {
+    await sleep()
+    const pagination = response.headers['pagination']
+    if (pagination) {
+        response.data = new PaginatedResponse(response.data, JSON.parse(pagination)) // items will come as paginated responseObject ites wioll be inside product. 
+        return response;
+    }
     return response; // returns normal response if there is no error. 
 }, (error: AxiosError) => { // check for error. 
     const {data, status} = error.response!; // get data and status from the error.response. 

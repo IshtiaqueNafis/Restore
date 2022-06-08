@@ -16,7 +16,7 @@ const ProductSearch = () => {
         <TextField label={'search products'}
                    variant={'outlined'}
                    fullWidth
-                   value={searchTerm || ''}
+                   value={searchTerm || ''} // can be null or undefined 
                    onChange={(event:any)=>{
                        setSearchTerm(event.target.value);
                        debouncedSearch(event);
