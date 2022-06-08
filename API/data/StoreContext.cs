@@ -1,9 +1,11 @@
 ﻿using API.models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.data
 {
-    public class StoreContext : DbContext
+    public class StoreContext : IdentityDbContext<User>
     {
         public StoreContext(DbContextOptions options) : base(options)
         {
@@ -11,5 +13,14 @@ namespace API.data
 
         public DbSet<Product> Products { get; set; }
         public DbSet<Basket> Baskets { get; set; } //gets all the basket items. 
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+            builder.Entity<IdentityRole>().HasData(
+                new IdentityRole {Name = "Member", NormalizedName = "MEMBER"},
+                new IdentityRole {Name = "Admin", NormalizedName = "ADMIN"}
+            ); // seeding data 
+        }
     }
 }
