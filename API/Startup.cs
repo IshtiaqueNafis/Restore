@@ -35,7 +35,10 @@ namespace API
             #endregion
 
             services.AddCors(); //add cors 
-            services.AddIdentityCore<User>().AddRoles<IdentityRole>()
+            services.AddIdentityCore<User>(opt =>
+                {
+                    opt.User.RequireUniqueEmail = true; // only speific email is allowed. 
+                }).AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<StoreContext>(); // IDENTITY
             services.AddAuthentication(); // authentication 
             services.AddAuthorization(); // autherization
