@@ -1,7 +1,9 @@
 using API.data;
 using API.Middleware;
+using API.models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,10 +28,17 @@ namespace API
             services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo {Title = "API", Version = "v1"}); });
 
             #region *** Configuring Db Context ***
+
             services.AddDbContext<StoreContext>(opt =>
                 opt.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
+
             #endregion
+
             services.AddCors(); //add cors 
+            services.AddIdentityCore<User>().AddRoles<IdentityRole>()
+                .AddEntityFrameworkStores<StoreContext>(); // IDENTITY
+            services.AddAuthentication(); // authentication 
+            services.AddAuthorization(); // autherization
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -39,14 +48,16 @@ namespace API
 
             if (env.IsDevelopment())
             {
-           
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "API v1"));
             }
-            
+
 
             app.UseRouting();
-            app.UseCors(opt => { opt.AllowAnyHeader().AllowAnyMethod().AllowCredentials().WithOrigins("http://localhost:3000"); });
+            app.UseCors(opt =>
+            {
+                opt.AllowAnyHeader().AllowAnyMethod().AllowCredentials().WithOrigins("http://localhost:3000");
+            });
 
 
             app.UseAuthorization();

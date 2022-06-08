@@ -1,18 +1,39 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using API.models;
+using Microsoft.AspNetCore.Identity;
 
 namespace API.data
 {
     public static class DbIntializer
     {
         //create a list of product and save it to database. 
-        public static void Initalize(StoreContext context)
+        public static async Task Initalize(StoreContext context, UserManager<User> userManager)
         {
-            if(context.Products.Any()) return; // means if there is a product list r means do not seed data 
+            if (!userManager.Users.Any())
+            {
+                var user = new User
+                {
+                    UserName = "bob",
+                    Email = "bob@test.com"
+                };
+                await userManager.CreateAsync(user, "Po$$w0rd");
+                await userManager.AddToRoleAsync(user, "Member");
+                var admin = new User
+                {
+                    UserName = "admin",
+                    Email = "admin@test.com"
+                };
+                await userManager.CreateAsync(admin, "Po$$w0rd");
+                await userManager.AddToRolesAsync(admin, new[] {"Admin", "Member"});
+            }
+
+
+            if (context.Products.Any()) return; // means if there is a product list r means do not seed data 
             var products = new List<Product>
             {
-               		new Product
+                new Product
                 {
                     Name = "Angular Speedster Board 2000",
                     Description =
@@ -212,10 +233,9 @@ namespace API.data
             foreach (var product in products)
             {
                 context.Products.Add(product);
-            }// loop through each item and save it. 
+            } // loop through each item and save it. 
 
             context.SaveChanges(); // save changes the product. 
-            
         }
     }
 }
