@@ -30,7 +30,7 @@ namespace API
             try
             {
                 await context.Database.MigrateAsync(); /// try to migrate database 
-                await DbIntializer.Initalize(context, userManager); // seed database 
+                await DbIntializer.Initialize(context, userManager); // seed database 
             }
             catch (Exception e)
             {

@@ -9,15 +9,16 @@ namespace API.data
     public static class DbIntializer
     {
         //create a list of product and save it to database. 
-        public static async Task Initalize(StoreContext context, UserManager<User> userManager)
+        public static async Task Initialize(StoreContext context, UserManager<User> userManager)
         {
-            if (!userManager.Users.Any())
+            if (!userManager.Users.Any()) // check if there is a user on the database. 
             {
                 var user = new User
                 {
                     UserName = "bob",
                     Email = "bob@test.com"
                 };
+                //creating user
                 await userManager.CreateAsync(user, "Po$$w0rd");
                 await userManager.AddToRoleAsync(user, "Member");
                 var admin = new User
@@ -26,7 +27,8 @@ namespace API.data
                     Email = "admin@test.com"
                 };
                 await userManager.CreateAsync(admin, "Po$$w0rd");
-                await userManager.AddToRolesAsync(admin, new[] {"Admin", "Member"});
+                await userManager.AddToRolesAsync(admin, new[] {"Admin", "Member"}); // new [] allows multuple user roles to be created 
+                // no save abymore cause async method takes care of the savinbg section. 
             }
 
 

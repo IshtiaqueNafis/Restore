@@ -26,7 +26,7 @@ namespace API.Controllers
         public async Task<ActionResult<UserDto>> Login(LogInDto loginDto)
         {
             var user = await _userManager.FindByNameAsync(loginDto.Username);
-            if (user == null || !await _userManager.CheckPasswordAsync(user, loginDto.Password))
+            if (user == null || !await _userManager.CheckPasswordAsync(user, loginDto.Password)) // check whether user name is null or not. 
             {
                 return Unauthorized();
             }
