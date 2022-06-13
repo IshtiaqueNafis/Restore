@@ -12,27 +12,27 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import {createTheme, ThemeProvider} from '@mui/material/styles';
 import {Paper} from "@mui/material";
-import {Link} from "react-router-dom";
+import {Link, useHistory} from "react-router-dom";
 import {FieldValues, useForm} from "react-hook-form";
 import agent from "../../app/api/agent";
 import {LoadingButton} from "@mui/lab";
+import {useAppDispatch} from "../../app/redux/configureStore";
+import {singInUser} from "./accountSlice";
 
 
 const theme = createTheme();
 
 
 const LogIn = () => {
+    const history = useHistory();
+    const dispatch = useAppDispatch();
     const {register, handleSubmit, formState: {isSubmitting, errors, isValid}} = useForm({
-        mode: 'onTouched'
+        mode: 'all'
     })
 
     async function submitForm(data: FieldValues) {
-        try {
-            await agent.Account.login(data);
-
-        } catch (e) {
-            console.log(e);
-        }
+        await dispatch(singInUser(data));
+        history.push("/catalog")
     }
 
     return (

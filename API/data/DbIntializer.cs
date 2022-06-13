@@ -237,7 +237,7 @@ namespace API.data
                 context.Products.Add(product);
             } // loop through each item and save it. 
 
-            context.SaveChanges(); // save changes the product. 
+            await context.SaveChangesAsync(); // save changes the product. 
         }
     }
 }

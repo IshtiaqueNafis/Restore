@@ -20,6 +20,7 @@ import {useAppDispatch} from "../redux/configureStore";
 import {setBasket} from "../../features/Basket/basketSlice";
 import LogIn from "../../features/account/LogIn";
 import Register from "../../features/account/Register";
+import {fetchCurrentUser} from "../../features/account/accountSlice";
 
 function App() {
 
@@ -29,6 +30,7 @@ function App() {
 
     useEffect(() => {
         const buyerId = getCookie('buyerId');
+        dispatch(fetchCurrentUser());
         if (buyerId) {
             agent.Basket.get().then(basket => dispatch(setBasket(basket))).catch(error => console.log(error)).finally(() => setLoading(false));
         } else {
