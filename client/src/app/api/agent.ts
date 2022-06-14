@@ -1,7 +1,8 @@
 ﻿import axios, {AxiosError, AxiosResponse} from "axios";
 import {toast} from "react-toastify";
 import {history} from '../..'
-import {PaginatedResponse} from "../models/pagination"; // this means index 
+import {PaginatedResponse} from "../models/pagination";
+import {store} from "../redux/configureStore"; // this means index 
 
 //region **axios settings**
 axios.defaults.baseURL = 'http://localhost:5000/api/'; // the base url to get the backend. 
@@ -9,7 +10,21 @@ axios.defaults.withCredentials = true;
 const sleep = () => new Promise(resolve => setTimeout(resolve, 1000));
 const responseBody = (response: AxiosResponse) => response.data; // base responsebody , return data from the body. 
 //endregion 
+
+axios.interceptors.request.use(config=>{
+    const token = store.getState().account.user?.token; // get the token property from the user 
+    if(token) {
+        // @ts-ignore
+        config.headers.Authorization = `Bearer ${token}` // then name the token with bearter 
+    }
+    return config;
+})
+
+
 //region ***axios interceptors used for respnse back from requests*** 
+
+
+
 axios.interceptors.response.use(async response => {
     await sleep()
     const pagination = response.headers['pagination']
@@ -42,7 +57,7 @@ axios.interceptors.response.use(async response => {
             break;
         case 401:
             // @ts-ignore
-            toast.error(data.title || `Unauthorized`);
+            toast.error(data.title);
             break;
         case 500:
             history.push("/server-error")
