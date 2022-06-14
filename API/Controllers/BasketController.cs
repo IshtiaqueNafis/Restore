@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using API.data;
 using API.DTO;
+using API.Extensions;
 using API.models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -25,9 +26,9 @@ namespace API.Controllers
         [HttpGet(Name = "GetBasket")] // rename to GetBasket
         public async Task<ActionResult<BasketDto>> GetBasket()
         {
-            Basket basket = await RetrievedBasket();
+            Basket basket = await RetrievedBasket(GetBuyerId());
             if (basket == null) return NotFound();
-            return MapBasketToDto(basket);
+            return basket.MapBasketToDto();
         }
 
         #endregion
@@ -35,7 +36,7 @@ namespace API.Controllers
         [HttpPost]
         public async Task<ActionResult<BasketDto>> AddItemToBasket(int productId, int quantity)
         {
-            var basket = await RetrievedBasket() ?? CreateBasket(); 
+            var basket = await RetrievedBasket(GetBuyerId()) ?? CreateBasket();
             // terrinary if there is a basket retive it. if not create a new one. 
 
             // ReSharper disable once HeapView.BoxingAllocation
@@ -43,7 +44,9 @@ namespace API.Controllers
             if (product == null) return BadRequest(new ProblemDetails {Title = "Product not found"});
             basket.AddItem(product, quantity);
             bool result = await _context.SaveChangesAsync() > 0;
-            if (result) return CreatedAtRoute("GetBasket", MapBasketToDto((basket))); // shows new basket being created with created at Route. 
+            if (result)
+                return CreatedAtRoute("GetBasket",
+                    basket.MapBasketToDto()); // shows new basket being created with created at Route. 
 
             return BadRequest(new ProblemDetails {Title = "problem saving"});
         }
@@ -51,7 +54,7 @@ namespace API.Controllers
         [HttpDelete]
         public async Task<ActionResult> RemoveItemFromBasket(int productId, int quantity)
         {
-            var basket = await RetrievedBasket();
+            var basket = await RetrievedBasket(GetBuyerId());
             if (basket == null) return NotFound();
             basket.RemoveItem(productId, quantity);
 
@@ -62,13 +65,21 @@ namespace API.Controllers
             return BadRequest(new ProblemDetails {Title = "problem removing product"});
         }
 
-        #region ***Task<ActionResult<Basket>> RetriveBasket() ---> retrive baskets***
+        #region ***Task<ActionResult<Basket>> RetriveBasket(string buyerid) ---> retrive baskets***
 
-        private async Task<Basket> RetrievedBasket() // no actionresults here since this is a normal method. 
-            =>
-                await _context.Baskets.Include(i => i.Items)
-                    .ThenInclude(p => p.Product)
-                    .FirstOrDefaultAsync(x => x.BuyerId == Request.Cookies["buyerId"]);
+        private async Task<Basket> RetrievedBasket(string buyerId)
+            // no actionresults here since this is a normal method. 
+        {
+            if (string.IsNullOrEmpty(buyerId))
+            {
+                Response.Cookies.Delete("buyerId"); // no buyer id delete it. 
+                return null;
+            }
+
+            return await _context.Baskets.Include(i => i.Items)
+                .ThenInclude(p => p.Product)
+                .FirstOrDefaultAsync(x => x.BuyerId == buyerId);
+        }
 
         #endregion
 
@@ -78,9 +89,14 @@ namespace API.Controllers
         {
             #region ***creating buyer id ***
 
-            string buyerId = Guid.NewGuid().ToString(); // creates lobally unique identifier.
-            CookieOptions cookieOptions = new CookieOptions {IsEssential = true, Expires = DateTime.Now.AddDays(30)};
-            Response.Cookies.Append("buyerId", buyerId, cookieOptions); // adds to server 
+            string buyerId = User.Identity?.Name; // get tthe name from identityy.
+            if (string.IsNullOrEmpty(buyerId))
+            {
+                buyerId = Guid.NewGuid().ToString();
+                CookieOptions cookieOptions = new CookieOptions
+                    {IsEssential = true, Expires = DateTime.Now.AddDays(30)};
+                Response.Cookies.Append("buyerId", buyerId, cookieOptions); // adds to server 
+            }
 
             #endregion
 
@@ -92,26 +108,7 @@ namespace API.Controllers
         #endregion
 
 
-        #region MapBasketToDto(Basket basket) --> map basket DTO
-
-        private BasketDto MapBasketToDto(Basket basket)
-        {
-            return new BasketDto
-            {
-                Id = basket.Id,
-                BuyerId = basket.BuyerId,
-                Items = basket.Items.Select(item => new BasketItemDto
-                {
-                    ProductId = item.ProductId,
-                    Name = item.Product.Name,
-                    Price = item.Product.Price,
-                    PictureUrl = item.Product.PictureUrl,
-                    Brand = item.Product.Brand,
-                    Quantity = item.Quantity
-                }).ToList()
-            };
-        }
-
-        #endregion
+        private string GetBuyerId() =>
+            User.Identity?.Name ?? Request.Cookies["buyerId"]; //get the id for username or buyer id. 
     }
 }
